@@ -19,7 +19,7 @@ Config file name must be "jrodns.properties".
 |key |require|default|desc|
 |:---|  :---:|   :---: |:---|
 |gfwlistPath|1| |the gfwlist file path. Value could be file name or absolute path
-|rosIp|1| |you ros server ip
+|rosIp|1| | ros server ip
 |rosUser|1| | ros router login username
 |rosPwd|1| | ros router login password
 |rosFwadrKey|1| | address-list key to set in ros
