@@ -5,14 +5,21 @@ In normal, people using dnsmasq+iptables+ipset to do that thing you know.
 But if you are using a hw-router like routerboard(routeros), you can't install external
  service or access that "internal-iptables".
  
-This only a dns proxy tool, you still need a trusted dns resource.
+This just a dns proxy tool, you still need a trusted dns resource.
 
-# prepare
-1. You need java env to run it.
+# how it working
+1. listen dns query request
+2. forward query to the top dns server
+3. got the dns answer and put it into routeros firewall using routeros' api.
+
+# prepare and run
+1. java env.
 2. Compile and package with mvn. An executeable jar file named jrodns-exec.jar
 will be generating.
 3. Put a config file same path with the jar. 
 Config file name must be "jrodns.properties".
+4. run with command "java -jar jrodns-exec.jar".
+5. change client's dns setting
 
 # config
 
