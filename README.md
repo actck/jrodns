@@ -17,7 +17,7 @@ Config file name must be "jrodns.properties".
 # config
 
 |key |require|default|desc|
-|:---|  :---:|   :---: |---:|
+|:---|  :---:|   :---: |:---|
 |gfwlistPath|1| |the gfwlist file path. Value could be file name or absolute path
 |rosIp|1| |you ros server ip
 |rosUser|1| | ros router login username
