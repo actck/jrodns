@@ -19,13 +19,14 @@ will be generating.
 3. Put a config file same path with the jar. 
 Config file name must be "jrodns.properties".
 4. run with command "java -jar jrodns-exec.jar".
-5. change client's dns setting
+5. setting packet route rule in routeros's firewall.
+6. change client's dns setting.
 
 # config
 
 |key |require|default|desc|
 |:---|  :---:|   :---: |:---|
-|gfwlistPath|1| |the gfwlist file path. Value could be file name or absolute path
+|gfwlistPath|1| |gfwlist file path. Value could be file name or absolute path
 |rosIp|1| | ros server ip
 |rosUser|1| | ros router login username
 |rosPwd|1| | ros router login password
