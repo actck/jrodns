@@ -60,10 +60,10 @@ public class GFWList {
             rule.init(ruleText.split("//")[1]);
             list.add(rule);
         } else if (ruleText.startsWith("/") && ruleText.endsWith("/")) {
-            UrlRegexRule rule = new UrlRegexRule();
-            rule.is_raw_regex = true;
-            rule.init(ruleText.substring(1, ruleText.length() - 1));
-            list.add(rule);
+//            UrlRegexRule rule = new UrlRegexRule();
+//            rule.is_raw_regex = true;
+//            rule.init(ruleText.substring(1, ruleText.length() - 1));
+//            list.add(rule);
         } else {
             HostUrlWildcardRule rule = new HostUrlWildcardRule();
             rule.onlyHttp = true;
