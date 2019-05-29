@@ -113,6 +113,8 @@ public class Application {
 
         RosService.init(rosIp, rosUser, rosPwd, rosFwadrKey, rosIdle);
 
+        // RosService.clear();
+
         logger.info("RosService init completed");
 
         GFWList.loadRules(readGFWlist());
@@ -125,6 +127,9 @@ public class Application {
         logger.info("server started");
 
         //con.close(); // disconnect from router
+
+        //GFWList instacne = GFWList.getInstacne();
+        //System.out.println(instacne.match("timgmb04.bdimg.com"));
     }
 
 }

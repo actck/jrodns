@@ -50,8 +50,10 @@ public class RosService {
         if (rosConn != null && rosConn.isConnected()) {
             return;
         }
+        logger.info("connecting routeros server...");
         rosConn = ApiConnection.connect(rosIp);
         rosConn.login(rosUser, rosPwd);
+        logger.info("connect success");
     }
 
     private static ApiConnection getRosConn() throws MikrotikApiException {
@@ -74,7 +76,7 @@ public class RosService {
     private static void sendAddRequest(String ip) throws MikrotikApiException {
         String commandTpl = "/ip/firewall/address-list/add list=%s address=%s";
         String command = String.format(commandTpl, rosFwadrKey, ip);
-        List<Map<String, String>> execute = getRosConn().execute(command);
+        getRosConn().execute(command);
     }
 
     public static void add(String... ips) throws MikrotikApiException {
@@ -88,8 +90,15 @@ public class RosService {
                 } else {
                     logger.warn("concurrent hint");
                 }
-                logger.info("{} add success");
+                logger.info("{} add success", ip);
             }
         }
     }
+
+    public static void clear() throws MikrotikApiException {
+        String commandTpl = "/ip/firewall/address-list/remove =.list=%s";
+        String command = String.format(commandTpl, rosFwadrKey);
+        getRosConn().execute(command);
+    }
+
 }

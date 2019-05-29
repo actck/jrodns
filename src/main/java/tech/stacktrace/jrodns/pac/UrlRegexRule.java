@@ -2,9 +2,6 @@ package tech.stacktrace.jrodns.pac; /**
  *
  */
 
-import tech.stacktrace.jrodns.pac.GFWListRule;
-import tech.stacktrace.jrodns.pac.StringHelper;
-
 import java.util.regex.Pattern;
 
 /**
@@ -12,11 +9,13 @@ import java.util.regex.Pattern;
  *
  */
 public class UrlRegexRule implements GFWListRule {
+    public static int count = 0;
     public boolean is_raw_regex;
     public Pattern urlReg;
 
     @Override
     public boolean init(String rule) {
+        count++;
         if (is_raw_regex) {
             urlReg = Pattern.compile(rule);
         } else {

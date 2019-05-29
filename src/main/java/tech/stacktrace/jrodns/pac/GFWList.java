@@ -1,5 +1,9 @@
 package tech.stacktrace.jrodns.pac;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,6 +13,8 @@ import java.util.ArrayList;
  * @author yinqiwen
  */
 public class GFWList {
+
+    static Logger logger = LoggerFactory.getLogger(GFWList.class);
 
     private static GFWList instance = new GFWList();
 
@@ -52,13 +58,10 @@ public class GFWList {
             if (i == 1) {
                 continue;
             }
-            if (null == line) {
+            if (StringUtils.isBlank(line)) {
                 break;
             }
             line = line.trim();
-            if (line.length() == 0) {
-                continue;
-            }
             if (line.startsWith("!")) {
                 continue;
             }
@@ -87,6 +90,11 @@ public class GFWList {
         }
         instance.blackList = b;
         instance.whiteList = w;
+
+        logger.info("loaded {} blackList records, {} whiteList records", b.size(), w.size());
+        logger.info("HostUrlWildcardRule count:{}", HostUrlWildcardRule.count);
+        logger.info("UrlRegexRule count:{}", UrlRegexRule.count);
+        logger.info("UrlWildcardRule count:{}", UrlWildcardRule.count);
     }
 
 }

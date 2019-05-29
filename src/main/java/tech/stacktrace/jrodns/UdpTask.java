@@ -43,7 +43,7 @@ public class UdpTask implements Runnable {
             RRset[] sectionRRsets = message.getSectionRRsets(Section.ANSWER);
             int messageId = message.getHeader().getID();
 
-            logger.debug("query, id: {}, question: {}, type: {}",
+            logger.info("query, id: {}, question: {}, type: {}",
                     messageId,
                     question.getName(),
                     Type.string(question.getType()));
@@ -56,7 +56,7 @@ public class UdpTask implements Runnable {
                         ARecord rd = (ARecord) iter.next();
                         aRecordIps.add(rd.getAddress().getHostAddress());
                     }
-                    logger.info("answer, id: {}, ips: {}", messageId, aRecordIps);
+                    logger.debug("answer, id: {}, ips: {}", messageId, aRecordIps);
                 }
             }
 
