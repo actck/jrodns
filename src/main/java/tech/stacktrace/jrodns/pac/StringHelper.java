@@ -86,10 +86,6 @@ public class StringHelper {
 
     public static boolean wildCardMatch(String text, String pattern) {
 
-        if(pattern.equals("g.co")){
-            System.out.println();
-        }
-
         // Create the cards by splitting using a RegEx. If more speed 
         // is desired, a simpler character based splitting can be done.
         String[] cards = pattern.split("\\*");

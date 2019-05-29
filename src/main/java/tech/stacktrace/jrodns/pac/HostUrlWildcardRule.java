@@ -35,7 +35,8 @@ public class HostUrlWildcardRule implements GFWListRule {
                 }
             }
         }
-        // 只匹配某一级的域名，忽略上级或者下级
+        // 只匹配某区间的域名，忽略上级或者下级
+        // 例如：host=A.B.C.D.E rule=B.C.D
         hostPattern = Pattern.compile("(^|\\.)" + ruleQuote + "(\\.|$)");
     }
 
@@ -76,5 +77,6 @@ public class HostUrlWildcardRule implements GFWListRule {
         HostUrlWildcardRule hostUrlWildcardRule = new HostUrlWildcardRule();
         hostUrlWildcardRule.init("cdn*.i-scmp.com");
         System.out.println(hostUrlWildcardRule.match("cdn.i-scmp.com"));
+
     }
 }

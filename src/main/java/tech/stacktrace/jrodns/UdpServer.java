@@ -14,13 +14,10 @@ public class UdpServer extends Thread {
 
     private DatagramSocket serverSocket;
 
-    private DatagramSocket remoteSocket;
-
     private ExecutorService pool;
 
     public UdpServer() throws SocketException {
         serverSocket = new DatagramSocket(Application.localPort);
-        remoteSocket = new DatagramSocket();
         pool = Executors.newFixedThreadPool(Application.maxThread);
     }
 
@@ -31,6 +28,7 @@ public class UdpServer extends Thread {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
         while (true) {
+
             try {
                 serverSocket.receive(packet);
             } catch (IOException e) {
@@ -38,12 +36,15 @@ public class UdpServer extends Thread {
                 continue;
             }
 
-            pool.submit(new UdpTask(
-                    serverSocket,
-                    remoteSocket,
-                    Utils.trimByteArray(packet.getData(), packet.getLength()),
-                    packet.getAddress(),
-                    packet.getPort()));
+            try {
+                pool.submit(new UdpTask(
+                        serverSocket,
+                        Utils.trimByteArray(packet.getData(), packet.getLength()),
+                        packet.getAddress(),
+                        packet.getPort()));
+            } catch (SocketException e) {
+                logger.error("task submit error", e);
+            }
         }
 
     }

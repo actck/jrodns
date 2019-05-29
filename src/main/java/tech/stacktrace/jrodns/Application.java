@@ -128,8 +128,8 @@ public class Application {
 
         //con.close(); // disconnect from router
 
-        //GFWList instacne = GFWList.getInstacne();
-        //System.out.println(instacne.match("timgmb04.bdimg.com"));
+        GFWList instacne = GFWList.getInstacne();
+        System.out.println(instacne.match("cdn.ampproject.org."));
     }
 
 }

@@ -73,20 +73,20 @@ public class RosService {
         logger.info("loaded {} records from ros-firwall", strs != null ? strs.size() : 0);
     }
 
-    private static void sendAddRequest(String ip) throws MikrotikApiException {
-        String commandTpl = "/ip/firewall/address-list/add list=%s address=%s";
-        String command = String.format(commandTpl, rosFwadrKey, ip);
+    private static void sendAddRequest(String ip, String comment) throws MikrotikApiException {
+        String commandTpl = "/ip/firewall/address-list/add list=%s address=%s comment=%s";
+        String command = String.format(commandTpl, rosFwadrKey, ip, comment);
         getRosConn().execute(command);
     }
 
-    public static void add(String... ips) throws MikrotikApiException {
+    public static void add(String hostname, String... ips) throws MikrotikApiException {
         for (String ip : ips) {
             if(cache.contains(ip)) {
                 logger.info("{} in cache hint, skip", ip);
             } else {
                 boolean flag = cache.add(ip);
                 if(flag) {
-                    sendAddRequest(ip);
+                    sendAddRequest(ip, hostname);
                 } else {
                     logger.warn("concurrent hint");
                 }

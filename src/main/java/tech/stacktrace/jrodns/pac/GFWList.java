@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yinqiwen
@@ -42,51 +43,62 @@ public class GFWList {
         return whiteList.isEmpty() && blackList.isEmpty();
     }
 
+    private static void ruleCheck(String ruleText, List<GFWListRule> list) {
+        if (ruleText.startsWith("||")) {
+            // ||domain
+            HostUrlWildcardRule rule = new HostUrlWildcardRule();
+            rule.init(ruleText.substring(2));
+            list.add(rule);
+        } else if (ruleText.startsWith(".")) {
+            // .domain
+            HostUrlWildcardRule rule = new HostUrlWildcardRule();
+            rule.init(ruleText.substring(1));
+            list.add(rule);
+        } else if (ruleText.startsWith("|http")) {
+            // | protocol domain
+            HostUrlWildcardRule rule = new HostUrlWildcardRule();
+            rule.init(ruleText.split("//")[1]);
+            list.add(rule);
+        } else if (ruleText.startsWith("/") && ruleText.endsWith("/")) {
+            UrlRegexRule rule = new UrlRegexRule();
+            rule.is_raw_regex = true;
+            rule.init(ruleText.substring(1, ruleText.length() - 1));
+            list.add(rule);
+        } else {
+            HostUrlWildcardRule rule = new HostUrlWildcardRule();
+            rule.onlyHttp = true;
+            rule.init(ruleText);
+            list.add(rule);
+        }
+    }
+
     public static void loadRules(String rules) throws IOException {
         ArrayList<GFWListRule> w = new ArrayList<>();
         ArrayList<GFWListRule> b = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new StringReader(rules));
         int i = 0;
+
         while (true) {
             String line = reader.readLine();
             i++;
             if (i == 1) {
                 continue;
             }
-            if (StringUtils.isBlank(line)) {
+            if (line == null) {
                 break;
+            }
+            if (StringUtils.isBlank(line)) {
+                continue;
             }
             line = line.trim();
             if (line.startsWith("!")) {
                 continue;
             }
-            if (line.startsWith("@@||")) {
-                HostUrlWildcardRule rule = new HostUrlWildcardRule();
-                rule.init(line.substring(4));
-                w.add(rule);
-            } else if (line.startsWith("||")) {
-                // ||domain
-                HostUrlWildcardRule rule = new HostUrlWildcardRule();
-                rule.init(line.substring(2));
-                b.add(rule);
-            } else if (line.startsWith(".")) {
-                // .domain
-                HostUrlWildcardRule rule = new HostUrlWildcardRule();
-                rule.init(line.substring(1));
-                b.add(rule);
-            } else if (line.startsWith("|http")) {
-                UrlWildcardRule rule = new UrlWildcardRule();
-                rule.init(line.substring(1));
-                b.add(rule);
-            } else if (line.startsWith("/") && line.endsWith("/")) {
-                UrlRegexRule rule = new UrlRegexRule();
-                rule.init(line.substring(1, line.length() - 1));
-                b.add(rule);
+
+            if (line.startsWith("@@")) {
+                ruleCheck(line.substring(2), w);
             } else {
-                HostUrlWildcardRule rule = new HostUrlWildcardRule();
-                rule.onlyHttp = true;
-                rule.init(line);
-                b.add(rule);
+                ruleCheck(line, b);
             }
         }
         instance.blackList = b;
