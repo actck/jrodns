@@ -127,9 +127,9 @@ public class Application {
         logger.info("server started");
 
         //con.close(); // disconnect from router
-
-        GFWList instacne = GFWList.getInstacne();
-        System.out.println(instacne.match("cdn.ampproject.org."));
+//
+//        GFWList instacne = GFWList.getInstacne();
+//        System.out.println(instacne.match("cdn.ampproject.org."));
     }
 
 }
