@@ -31,7 +31,7 @@ public class HostUrlWildcardRule implements GFWListRule {
             for (int i = 0; i < parts.length; i++) {
                 ruleQuote += Pattern.quote(parts[i]);
                 if(i < parts.length - 1) {
-                    ruleQuote += "\\S*";
+                    ruleQuote += ".*";
                 }
             }
         }

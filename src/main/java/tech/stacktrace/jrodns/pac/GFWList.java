@@ -29,11 +29,6 @@ public class GFWList {
     }
 
     public boolean match(String host) {
-
-        /*if(!host.startsWith("https://") || !host.startsWith("http://")) {
-            host = "http://" + host;
-        }*/
-
         for (GFWListRule rule : whiteList) {
             if (rule.match(host)) {
                 return false;
@@ -70,8 +65,14 @@ public class GFWList {
                 rule.init(line.substring(4));
                 w.add(rule);
             } else if (line.startsWith("||")) {
+                // ||domain
                 HostUrlWildcardRule rule = new HostUrlWildcardRule();
                 rule.init(line.substring(2));
+                b.add(rule);
+            } else if (line.startsWith(".")) {
+                // .domain
+                HostUrlWildcardRule rule = new HostUrlWildcardRule();
+                rule.init(line.substring(1));
                 b.add(rule);
             } else if (line.startsWith("|http")) {
                 UrlWildcardRule rule = new UrlWildcardRule();
