@@ -12,21 +12,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class Application {
 
     static Logger logger = LoggerFactory.getLogger(Application.class);
 
     private static String gfwlistPath;
-    private static String rosUser;
-    private static String rosPwd;
-    private static String rosIp;
-    private static String rosFwadrKey;
-    private static Integer rosIdle;
+    public static String rosUser;
+    public static String rosPwd;
+    public static String rosIp;
+    public static String rosFwadrKey;
+    public static Integer rosIdle;
+    public static List<String> excludeHosts = new ArrayList<>();
     public static Integer maxThread;
     public static Integer localPort;
     public static String remote;
@@ -54,6 +52,15 @@ public class Application {
         rosIp = properties.getProperty("rosIp");
         rosFwadrKey = properties.getProperty("rosFwadrKey");
         remote = properties.getProperty("remote");
+
+        String tmp = properties.getProperty("excludeHosts");
+        if(StringUtils.isNotBlank(tmp)) {
+            String[] split = tmp.split(",");
+            for (String s : split) {
+                excludeHosts.add(s.trim());
+            }
+        }
+
 
         String maxThreadStr = properties.getProperty("maxThread");
         if (StringUtils.isNotEmpty(maxThreadStr)) {
@@ -111,7 +118,7 @@ public class Application {
 
         logger.info("config file verify success");
 
-        RosService.init(rosIp, rosUser, rosPwd, rosFwadrKey, rosIdle);
+        RosService.init();
 
         // RosService.clear();
 

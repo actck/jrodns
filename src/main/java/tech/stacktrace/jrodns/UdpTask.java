@@ -25,10 +25,10 @@ public class UdpTask implements Runnable {
     private final int port;
 
 
-    public UdpTask(DatagramSocket serverSocket, byte[] data, InetAddress addr, int port) throws SocketException {
+    public UdpTask(DatagramSocket serverSocket, DatagramSocket remoteSocket, byte[] data, InetAddress addr, int port) throws SocketException {
         this.data = data;
         this.serverSocket = serverSocket;
-        this.remoteSocket = new DatagramSocket();
+        this.remoteSocket = remoteSocket;
         this.addr = addr;
         this.port = port;
     }
@@ -42,35 +42,43 @@ public class UdpTask implements Runnable {
             Record question = message.getQuestion();
             RRset[] sectionRRsets = message.getSectionRRsets(Section.ANSWER);
             int messageId = message.getHeader().getID();
+            String questionName = question.getName().toString();
+            if (questionName.endsWith(".")) {
+                questionName = questionName.substring(0, questionName.length() - 1);
+            }
 
-            logger.info("query, id: {}, question: {}, type: {}",
+            logger.info("query -> id: {}, question: {}, type: {}",
                     messageId,
-                    question.getName(),
+                    questionName,
                     Type.string(question.getType()));
 
             List<String> aRecordIps = new ArrayList<>();
             for (RRset rrset : sectionRRsets) {
-                if(rrset.getType() == Type.A) {
+                if (rrset.getType() == Type.A) {
                     Iterator iter = rrset.rrs();
                     while (iter.hasNext()) {
                         ARecord rd = (ARecord) iter.next();
                         aRecordIps.add(rd.getAddress().getHostAddress());
                     }
-                    logger.debug("answer, id: {}, ips: {}", messageId, aRecordIps);
+                    logger.debug("remote answer -> id: {}, ips: {}", messageId, aRecordIps);
                 }
             }
 
-            if(question.getType() == Type.A && !aRecordIps.isEmpty()) {
-                GFWList gfwList = GFWList.getInstacne();
-                if(gfwList.match(question.getName().toString())) {
-                    logger.debug("gfwlist hint");
-                    RosService.add(question.getName().toString(), aRecordIps.toArray(new String[]{}));
+            if (question.getType() == Type.A && !aRecordIps.isEmpty()) {
+                if(Application.excludeHosts.isEmpty() || !Application.excludeHosts.contains(questionName)) {
+                    GFWList gfwList = GFWList.getInstacne();
+                    if (gfwList.match(questionName)) {
+                        logger.debug("gfwlist hint");
+                        RosService.add(questionName, aRecordIps.toArray(new String[]{}));
+                    }
+                } else {
+                    logger.debug("hint system excludeHosts, skip gfwlist check");
                 }
             }
 
             DatagramPacket reply = new DatagramPacket(rece, rece.length, addr, port);
             serverSocket.send(reply);
-            logger.debug("send complete");
+            logger.debug("reply complete");
         } catch (Exception e) {
             logger.error("task error", e);
         }

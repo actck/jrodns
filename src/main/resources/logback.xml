@@ -3,7 +3,7 @@
 <configuration debug="true">
     <jmxConfigurator/>
     <!-- 最大保存历史日志天数 -->
-    <property name="LOG_MAX_HISTORY" value="15" />
+    <property name="LOG_MAX_HISTORY" value="4" />
 
     <!-- 控制台输出 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
