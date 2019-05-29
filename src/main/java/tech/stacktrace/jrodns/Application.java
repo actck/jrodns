@@ -112,7 +112,7 @@ public class Application {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public static void main(String[] args) throws IOException, MikrotikApiException {
+    public static void main(String[] args) throws IOException {
 
         readProp();
 
