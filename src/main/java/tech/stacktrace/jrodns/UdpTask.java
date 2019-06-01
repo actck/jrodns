@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class UdpTask implements Runnable {
 
@@ -23,9 +24,10 @@ public class UdpTask implements Runnable {
     private final DatagramSocket remoteSocket;
     private final InetAddress addr;
     private final int port;
+    private static ExecutorService workerPool = Executors.newFixedThreadPool(Application.maxThread);
 
 
-    public UdpTask(DatagramSocket serverSocket, DatagramSocket remoteSocket, byte[] data, InetAddress addr, int port) throws SocketException {
+    public UdpTask(DatagramSocket serverSocket, DatagramSocket remoteSocket, byte[] data, InetAddress addr, int port) {
         this.data = data;
         this.serverSocket = serverSocket;
         this.remoteSocket = remoteSocket;
@@ -36,6 +38,9 @@ public class UdpTask implements Runnable {
     @Override
     public void run() {
         try {
+
+            long time = System.currentTimeMillis();
+
             byte[] rece = forwardToRemote(data);
 
             Message message = new Message(rece);
@@ -64,21 +69,26 @@ public class UdpTask implements Runnable {
                 }
             }
 
+            DatagramPacket reply = new DatagramPacket(rece, rece.length, addr, port);
+            serverSocket.send(reply);
+            logger.debug("reply complete, used {}ms", System.currentTimeMillis() - time);
+
             if (question.getType() == Type.A && !aRecordIps.isEmpty()) {
                 if(Application.excludeHosts.isEmpty() || !Application.excludeHosts.contains(questionName)) {
-                    GFWList gfwList = GFWList.getInstacne();
-                    if (gfwList.match(questionName)) {
-                        logger.debug("gfwlist hint");
-                        RosService.add(questionName, aRecordIps.toArray(new String[]{}));
-                    }
+                    long finalTime = System.currentTimeMillis();
+                    String finalQuestionName = questionName;
+                    workerPool.submit(() -> {
+                        GFWList gfwList = GFWList.getInstacne();
+                        if (gfwList.match(finalQuestionName)) {
+                            logger.debug("gfwlist hint");
+                            RosService.add(finalQuestionName, aRecordIps.toArray(new String[]{}));
+                        }
+                        logger.debug("gfwlist check task complete, used {}ms", System.currentTimeMillis() - finalTime);
+                    });
                 } else {
                     logger.debug("hint system excludeHosts, skip gfwlist check");
                 }
             }
-
-            DatagramPacket reply = new DatagramPacket(rece, rece.length, addr, port);
-            serverSocket.send(reply);
-            logger.debug("reply complete");
         } catch (Exception e) {
             logger.error("task error", e);
         }
