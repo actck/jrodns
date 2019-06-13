@@ -43,7 +43,7 @@ public class Application {
 
     private static void readProp() throws IOException {
 
-        File file = checkFile("jrodns.properties");
+        File file = checkFile(System.getProperty("user.dir") + "jrodns.properties");
 
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
@@ -56,7 +56,7 @@ public class Application {
         remote = properties.getProperty("remote");
 
         String tmp = properties.getProperty("excludeHosts");
-        if(StringUtils.isNotBlank(tmp)) {
+        if (StringUtils.isNotBlank(tmp)) {
             String[] split = tmp.split(",");
             for (String s : split) {
                 excludeHosts.add(s.trim());
@@ -115,6 +115,10 @@ public class Application {
     }
 
     public static void main(String[] args) throws IOException {
+
+        System.out.println(System.getProperty("user.dir") + "jrodns.properties");
+
+        if (true) return;
 
         readProp();
 
