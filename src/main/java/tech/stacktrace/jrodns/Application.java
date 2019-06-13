@@ -41,9 +41,9 @@ public class Application {
         return file;
     }
 
-    private static void readProp() throws IOException {
+    private static void readProp(String configFilePath) throws IOException {
 
-        File file = checkFile(System.getProperty("user.dir") + "jrodns.properties");
+        File file = checkFile(configFilePath);
 
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
@@ -116,11 +116,12 @@ public class Application {
 
     public static void main(String[] args) throws IOException {
 
-        System.out.println(System.getProperty("user.dir") + "jrodns.properties");
+        String configFilePath = "jrodns.properties";
+        if(args != null && args.length > 0) {
+            configFilePath = args[0];
+        }
 
-        if (true) return;
-
-        readProp();
+        readProp(configFilePath);
 
         logger.info("config file verify success");
 
